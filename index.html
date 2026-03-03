@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live Stock Market App</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#0f172a;
+    color:white;
+    text-align:center;
+}
+
+h1{
+    background:#111827;
+    padding:15px;
+    margin:0;
+}
+
+.container{
+    margin-top:40px;
+}
+
+input{
+    padding:10px;
+    font-size:16px;
+    border-radius:8px;
+    border:none;
+    width:150px;
+}
+
+button{
+    padding:10px 15px;
+    font-size:16px;
+    border:none;
+    border-radius:8px;
+    background:#22c55e;
+    color:white;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#16a34a;
+}
+
+.card{
+    margin-top:30px;
+    background:#1e293b;
+    padding:20px;
+    border-radius:12px;
+    display:inline-block;
+    min-width:250px;
+}
+
+.price{
+    font-size:28px;
+    margin-top:10px;
+    color:#22c55e;
+}
+</style>
+</head>
+
+<body>
+
+<h1>📈 Live Stock Market</h1>
+
+<div class="container">
+    <input type="text" id="symbol" placeholder="Enter Symbol (AAPL)">
+    <button onclick="getStock()">Get Price</button>
+
+    <div class="card" id="stockCard" style="display:none;">
+        <h2 id="stockName"></h2>
+        <div class="price" id="stockPrice"></div>
+    </div>
+</div>
+
+<script>
+let currentSymbol = "";
+
+async function getStock(){
+    const symbol = document.getElementById("symbol").value.toUpperCase();
+    if(!symbol) return alert("Enter stock symbol");
+
+    currentSymbol = symbol;
+
+    try{
+        const response = await fetch(
+            `https://financialmodelingprep.com/api/v3/quote/${symbol}?apikey=demo`
+        );
+        const data = await response.json();
+
+        if(data.length === 0){
+            alert("Stock not found");
+            return;
+        }
+
+        document.getElementById("stockCard").style.display = "block";
+        document.getElementById("stockName").innerText = data[0].name;
+        document.getElementById("stockPrice").innerText = "$ " + data[0].price;
+
+    }catch(error){
+        alert("Error fetching data");
+    }
+}
+
+// Auto refresh every 30 seconds
+setInterval(()=>{
+    if(currentSymbol){
+        getStock();
+    }
+},30000);
+</script>
+
+</body>
+</html>
